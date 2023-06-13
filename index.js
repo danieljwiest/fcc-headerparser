@@ -15,16 +15,42 @@ app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 2
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
 // your first API endpoint...
-app.get('/api/hello', function (req, res) {
+app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT || 3000, function () {
+var listener = app.listen(process.env.PORT || 3000, function() {
   console.log('Your app is listening on port ' + listener.address().port);
 });
+
+function logAllProperties(obj) {
+     if (obj == null) return; // recursive approach
+     console.log(obj.constructor.name)
+     console.log(Object.getOwnPropertyNames(obj));
+     logAllProperties(Object.getPrototypeOf(obj));
+}
+
+
+const parseHeader = (req, res) => {
+  let reqIP = req.ip
+  let reqLang = req.acceptsLanguages()[0];
+  let reqSoftware = req.accepts()[0];
+
+
+  
+  logAllProperties(req)
+  
+  res.send({ipaddress: reqIP, language: reqLang, software: reqSoftware})
+}
+
+
+app.get(
+  '/api/whoami',
+  parseHeader
+)
